@@ -83,8 +83,8 @@ public class Service {
 
     public static void main(String[] args) throws IOException {
         String host = "https://dtsvc.safaricom.com:8480";
-        String username = "Etiqet_apiuser";
-        String password = "Admin@123";
+        String username = "";
+        String password = "";
 
         OkHttpClient client = getUnsafeOkHttpClient();
 
