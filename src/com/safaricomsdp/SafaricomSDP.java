@@ -12,8 +12,8 @@ public final class SafaricomSDP {
     public static final String SERVICE_DEACTIVATE = BASE_URL + "/api/public/SDP/deactivate";
     public static final String SERVICE_CPNOTIFICATION = BASE_URL + "/api/public/SDP/CPNotification";
 
-    public static final String userName = "Etiqet_apiuser"; //Username allocated by the SDP to the partner after successful registration.
-    public static final String password = "Admin@123"; //Password allocated by the SDP to the partner after successful registration.
+    public static final String userName = ""; //Username allocated by the SDP to the partner after successful registration.
+    public static final String password = ""; //Password allocated by the SDP to the partner after successful registration.
 
     public static final String LinkId = "00010310189519161781865526";    //This ID is generated when a user requests for a service in SDP.
     public static final String OfferCode = "1003"; //This is allocated by partner or Safaricom on successful service creation from SDP.
