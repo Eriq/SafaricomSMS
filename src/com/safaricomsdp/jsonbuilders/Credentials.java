@@ -1,4 +1,4 @@
-package com.safaricomsdp;
+package com.safaricomsdp.jsonbuilders;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -11,6 +11,11 @@ public class Credentials {
     @SerializedName("password")
     @Expose
     private String password;
+
+    public Credentials(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
 
     public String getUsername() {
         return username;

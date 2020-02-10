@@ -1,6 +1,10 @@
 package com.safaricomsdp;
 
 import com.google.gson.Gson;
+import com.safaricomsdp.jsonbuilders.Bulk;
+import com.safaricomsdp.jsonbuilders.Credentials;
+import com.safaricomsdp.jsonbuilders.RequestPacket;
+import com.safaricomsdp.jsonbuilders.Token;
 import okhttp3.*;
 import okhttp3.Response;
 import okhttp3.RequestBody;
@@ -9,20 +13,17 @@ import javax.net.ssl.*;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 
-public class Service {
+public final class Service {
 
-    private final String host;
-    private final OkHttpClient client;
+    public static String token = null;
+    public static String refreshToken = null;
+    public static String msg = null;
 
-    public Service(String host, OkHttpClient client) {
-        super();
-        this.host = host;
-        this.client = client;
-    }
+    public static void getToken(String userName, String password) throws IOException {
+        Credentials credentials = new Credentials(userName,password);
+        OkHttpClient client = Service.getUnsafeOkHttpClient();
 
-
-    public String getToken(Credentials credentials) throws IOException {
-        HttpUrl route = HttpUrl.parse(host + "/api/auth/login");
+        HttpUrl route = HttpUrl.parse(SafaricomSDP.SERVICE_LOGIN);
         Gson gson = new Gson();
         String jsonString = gson.toJson(credentials);
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -35,11 +36,60 @@ public class Service {
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
+            Token t  = gson.fromJson(response.body().string(), Token.class);
+            Service.token  = t.getToken();
+            Service.refreshToken = t.getRefreshToken();
+            Service.msg = t.getMsg();
+        }
+    }
+
+    public static String sendBulkSMS(Bulk sms, String host) throws IOException {
+        OkHttpClient client = Service.getUnsafeOkHttpClient();
+
+        HttpUrl route = HttpUrl.parse(host);
+        Gson gson = new Gson();
+
+        String jsonString = gson.toJson(sms);
+
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        RequestBody body = RequestBody.create(JSON, jsonString);
+
+        Request request = new Request.Builder()
+                .addHeader("X-Requested-With", "XMLHttpRequest")
+                .addHeader("X-Authorization", "Bearer " + token)
+                .url(route)
+                .post(body)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
             return response.body().string();
         }
     }
 
-    private static OkHttpClient getUnsafeOkHttpClient() {
+    public static String sendRequest(RequestPacket requestPacket, String host) throws IOException {
+        OkHttpClient client = Service.getUnsafeOkHttpClient();
+
+        HttpUrl route = HttpUrl.parse(host);
+        Gson gson = new Gson();
+
+        String jsonString = gson.toJson(requestPacket);
+
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        RequestBody body = RequestBody.create(JSON, jsonString);
+
+        Request request = new Request.Builder()
+                .addHeader("X-Requested-With", "XMLHttpRequest")
+                .addHeader("X-Authorization", "Bearer " + token)
+                .url(route)
+                .post(body)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            return response.body().string();
+        }
+    }
+
+    public static OkHttpClient getUnsafeOkHttpClient() {
         try {
             // Create a trust manager that does not validate certificate chains
             final TrustManager[] trustAllCerts = new TrustManager[] {
@@ -81,18 +131,4 @@ public class Service {
         }
     }
 
-    public static void main(String[] args) throws IOException {
-        String host = "https://dtsvc.safaricom.com:8480";
-        String username = "";
-        String password = "";
-
-        OkHttpClient client = getUnsafeOkHttpClient();
-
-        Service test = new Service(host,client);
-        Credentials user = new Credentials();
-        user.setUsername(username);
-        user.setPassword(password);
-
-        System.out.println(test.getToken(user));
-    }
 }

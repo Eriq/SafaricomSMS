@@ -1,4 +1,4 @@
-package com.safaricomsdp;
+package com.safaricomsdp.jsonbuilders;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -14,6 +14,12 @@ public class Token {
     @SerializedName("refreshToken")
     @Expose
     private String refreshToken;
+
+    public Token(String msg, String token, String refreshToken) {
+        this.msg = msg;
+        this.token = token;
+        this.refreshToken = refreshToken;
+    }
 
     public String getMsg() {
         return msg;
